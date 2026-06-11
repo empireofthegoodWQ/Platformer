@@ -1,8 +1,8 @@
-# DANILGAME
+# Platformer
 
 <div align="center">
 
-![Logo Game](logo.png)
+<img src="logo.png" alt="Logo" width="400">
 
 **Динамичный 2D-платформер с кучей уровней, монеток и скрытых отсылок!**
 
