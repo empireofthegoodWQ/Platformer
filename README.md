@@ -2,7 +2,7 @@
 
 <div align="center">
 
-<img src="logo.png" alt="Logo" width="400">
+<img src="assets/logo.png" alt="Logo" width="400">
 
 **Динамичный 2D-платформер с кучей уровней, монеток и скрытых отсылок!**
 
