@@ -1,46 +1,51 @@
 @echo off
 chcp 65001 > nul
-echo ==============================================
-echo [Game] Начинаем установку и сборку игры...
-echo ==============================================
+echo  ================================
+call :output 02 "INSTALLER"
+echo  ================================
 
-cd ..
-set "PROJECT_ROOT=%CD%"
+set "GAME_NAME=Platformer"
+set "BAT_PATH=%~dp0"
+set "ROOT=%BAT_PATH%..\.."
+set "PYI_FLAGS=--noconfirm --onedir --windowed"
 
-if not exist venv (
-    echo [1/5] Создаем виртуальное окружение...
-    python -m venv venv
-) else (
-    echo [1/5] Виртуальное окружение уже существует.
+:: Проверка есть ли пайтон в системе
+python --version 1>nul 2>&1 || (
+	call :output 04 "Пайтон не установлен!"
+	echo Установите его по инструкции https://metanit.com/python/tutorial/1.2.php.
+	pause
+	exit /b
 )
 
-echo [2/5] Активация окружения...
-call venv\Scripts\activate.bat
+:: Настройка виртуального окружения
+dir /ad "%BAT_PATH%venv" > nul 2>&1 || (
+	echo Cоздание виртуального окружения
+	python -m venv "%BAT_PATH%venv"
+)
+call "%BAT_PATH%venv\Scripts\activate.bat"
 
-echo [3/5] Обновление pip и установка зависимостей...
-python -m pip install --upgrade pip
-pip install -r requirements.txt
-pip install pyinstaller
+cd /d "%ROOT%\."
+echo Обновление pip..
+python -m pip install --upgrade pip > nul || call :output 04 "[ERROR] Не удалось обновить pip"
+echo Установка основных зависимостей
+pip install -r "%ROOT%\requirements.txt" > nul 
 
-echo [4/5] Компиляция игры в .EXE...
-pyinstaller --noconfirm --onedir --windowed --name "Game" main.py
+:: Сборка в .ЕХЕ и копирование ресурсов в релизную папку
+call :output 03 "Компиляция игры..."
+pyinstaller %PYI_FLAGS% --name "%GAME_NAME%" --distpath "%BAT_PATH%." main.py || (pause && exit /b)
 
-echo [5/5] Копирование ресурсов...
-:: Папки с картинками/звуками
-if exist assets xcopy /E /I /Y assets dist\Game\assets > nul
-if exist sounds xcopy /E /I /Y sounds dist\Game\sounds > nul
-if exist images xcopy /E /I /Y images dist\Game\images > nul
+echo Копирование картинок и настроек в папку с игрой...
+copy /Y "%ROOT%\*.json" "%BAT_PATH%%GAME_NAME%" > nul
+xcopy /E /I /Y "%ROOT%\assets" "%BAT_PATH%%GAME_NAME%\assets" > nul
 
-:: JSON файлы уровней (важно!)
-if exist levels.json copy /Y levels.json dist\Game\levels.json > nul
-if exist data\*.json xcopy /E /I /Y data\*.json dist\Game\data\ > nul 2> nul
-
-echo ==============================================
-echo [УСПЕХ] Сборка завершена!
-echo.
-echo Готовая игра: %PROJECT_ROOT%\dist\Game\Game.exe
-echo Уровни скопированы: %PROJECT_ROOT%\dist\Game\levels.json
-echo.
-echo Запускайте и наслаждайтесь!
-echo ==============================================
+call :output 01 "Сборка завершена."
+call :output 02 "Путь к файлу ""%BAT_PATH%%GAME_NAME%"""
 pause
+exit /b
+
+:output 
+:: num_color text
+color %1
+echo %~2
+color 07
+goto :eof
