@@ -1,7 +1,6 @@
 ﻿$GameName = "Platformer"
-$RootPath = "$PSScriptRoot\.."
-$path_exe = "$PSScriptRoot\$GameName"
-
+$RootPath = "$PSScriptRoot\.." # Корневая папка где лежит исходный код проекта
+$path_exe = "$PSScriptRoot\$GameName" # Путь будет лежать готовый exe-шник
 
 Write-Host ("="*29)
 Write-Host ("="*10) -NoNewline
@@ -21,6 +20,7 @@ if (-not (Test-Path "$RootPath\venv" -PathType Container)) {
     python -m venv "$RootPath\venv"
 }
 
+# Проверка наличия библиотек по очереди из файла requirements.txt в корневой папке
 Write-Host "Активация виртуального окружения"
 & "$RootPath\venv\Scripts\Activate.ps1"
 foreach ($line in Get-Content "$RootPath\requirements.txt") {
@@ -51,6 +51,7 @@ if ($LastExitCode -ne 0) {
 }
 
 Write-Host "Копирование ресурсов игры..."
+# Принудительно перезаписывает конфиги и assets (через флаг -Force)
 Copy-Item -Path "$RootPath\assets" -Destination "$path_exe\assets" -Recurse -Force
 Copy-Item -Path "$RootPath\*.json" -Destination "$path_exe" -Force
 
