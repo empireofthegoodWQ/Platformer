@@ -1,5 +1,5 @@
 ﻿$GameName = "Platformer"
-$RootPath = "$PSScriptRoot\..\.."
+$RootPath = "$PSScriptRoot\.."
 $path_exe = "$PSScriptRoot\$GameName"
 
 
@@ -26,13 +26,15 @@ Write-Host "Активация виртуального окружения"
 foreach ($line in Get-Content "$RootPath\requirements.txt") {
     if ($line.Trim().Length -eq 0) { continue }
     $pkg_name = $line -replace "[<>=].*", ""
-    Write-Host "Проверка наличии библеотеки $pkg_name..."
+    Write-Host "Проверка наличия библиотеки $pkg_name..."
+
     pip show $pkg_name *> $null
     if ($LastExitCode -ne 0) {
-        Write-Host "Установка библеотеки $pkg_name..." -ForegroundColor Cyan
+        Write-Host "Установка библиотеки $pkg_name..." -ForegroundColor Cyan
         pip install $line *> $null
     } else {
-        Write-Host "Библеотека $pkg_name уже установлена" -ForegroundColor Cyan
+        Write-Host "Библиотека $pkg_name уже установлена" -ForegroundColor Cyan
+
     }
 }
 
