@@ -9,10 +9,11 @@ venv/
 ENV/
 env/
 
-# Сборка PyInstaller (папки, которые создаются при запуске вашего .bat скрипта)
 build/
 dist/
+Platformer/
 *.spec
+
 
 # Логи и отчеты об ошибках
 *.log
